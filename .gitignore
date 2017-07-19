@@ -1,4 +1,5 @@
 _build
 *.install
 *.merlin
-
+/lib
+node_modules
