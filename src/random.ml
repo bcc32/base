@@ -124,9 +124,11 @@ module State = struct
     | W32 -> full_range_nativeint_on_32bits
   ;;
 
-  let [@inline never] raise_crossed_bounds name lower_bound upper_bound string_of_bound =
+  let raise_crossed_bounds = begin fun name lower_bound upper_bound string_of_bound ->
     Printf.failwithf "Random.%s: crossed bounds [%s > %s]"
       name (string_of_bound lower_bound) (string_of_bound upper_bound) ()
+    end
+  [@@inline never]
   ;;
 
   let int_incl =

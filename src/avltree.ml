@@ -9,21 +9,25 @@ module Int = struct
   let max (x : t) y = if x > y then x else y
 end
 
+type node = { mutable left   : ('k, 'v) t
+            ;         key    : 'k
+            ; mutable value  : 'v
+            ; mutable height : int
+            ; mutable right  : ('k, 'v) t
+            }
+
+type leaf = {         key    : 'k
+            ; mutable value  : 'v
+            }
+
 (* Its important that Empty have no args. It's tempting to make this type a record
    (e.g. to hold the compare function), but a lot of memory is saved by Empty being an
    immediate, since all unused buckets in the hashtbl don't use any memory (besides the
    array cell) *)
 type ('k, 'v) t =
   | Empty
-  | Node of { mutable left   : ('k, 'v) t
-            ;         key    : 'k
-            ; mutable value  : 'v
-            ; mutable height : int
-            ; mutable right  : ('k, 'v) t
-            }
-  | Leaf of {         key    : 'k
-            ; mutable value  : 'v
-            }
+  | Node of node
+  | Leaf of leaf
 
 
 let empty = Empty

@@ -1595,7 +1595,7 @@ include Accessors
 
 type ('k, 'cmp) comparator =
   (module Comparator.S with type t = 'k and type comparator_witness = 'cmp)
-let to_comparator (type k cmp) ((module M) : (k, cmp) comparator) = M.comparator
+let to_comparator (type k) (type cmp) ((module M) : (k, cmp) comparator) = M.comparator
 
 let empty m = Using_comparator.empty ~comparator:(to_comparator m)
 let singleton m a = Using_comparator.singleton ~comparator:(to_comparator m) a
@@ -1629,7 +1629,7 @@ module type Hash_fold_m = Hasher.S
 let sexp_of_m__t (type k) (module K : Sexp_of_m with type t = k) sexp_of_v t =
   sexp_of_t K.sexp_of_t sexp_of_v (fun _ -> Sexp.Atom "_") t
 
-let m__t_of_sexp (type k cmp)
+let m__t_of_sexp (type k) (type cmp)
       (module K : M_of_sexp with type t = k and type comparator_witness = cmp)
       v_of_sexp sexp =
   Using_comparator.t_of_sexp_direct ~comparator:K.comparator K.t_of_sexp v_of_sexp sexp

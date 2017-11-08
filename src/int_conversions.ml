@@ -2,13 +2,15 @@ open! Import
 
 module Sys = Sys0
 
-let [@inline never] convert_failure x a b to_string =
+let convert_failure = begin fun x a b to_string ->
   Printf.failwithf
     "conversion from %s to %s failed: %s is out of range"
     a
     b
     (to_string x)
     ()
+end
+[@@inline never]
 
 let num_bits_int       = Sys.int_size_in_bits
 let num_bits_int32     = 32

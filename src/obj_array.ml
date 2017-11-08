@@ -55,16 +55,20 @@ let get t i =
   Caml.Obj.repr (Array.get (Caml.Obj.magic (t : t) : not_a_float array) i : not_a_float)
 ;;
 
-let [@inline always] unsafe_get t i =
+let unsafe_get = begin fun t i ->
   (* Make the compiler believe [t] is an array not containing floats so it does not check
      if [t] is tagged with [Double_array_tag]. *)
   Caml.Obj.repr
     (Array.unsafe_get (Caml.Obj.magic (t : t) : not_a_float array) i : not_a_float)
+end
+[@@inline always]
 ;;
 
-let [@inline always] unsafe_set_int_assuming_currently_int t i int =
+let unsafe_set_int_assuming_currently_int = begin fun t i int ->
   (* This skips [caml_modify], which is OK if both the old and new values are integers. *)
   Array.unsafe_set (Caml.Obj.magic (t : t) : int array) i (Sys.opaque_identity int)
+end
+[@@inline always]
 ;;
 
 (* For [set] and [unsafe_set], if a pointer is involved, we first do a physical-equality
@@ -84,19 +88,23 @@ let set t i obj =
     Array.unsafe_set t i (Sys.opaque_identity obj)
 ;;
 
-let [@inline always] unsafe_set t i obj =
+let unsafe_set = begin fun t i obj ->
   let old_obj = unsafe_get t i in
   if Caml.Obj.is_int old_obj && Caml.Obj.is_int obj
   then unsafe_set_int_assuming_currently_int t i (Caml.Obj.obj obj : int)
   else if not (phys_equal old_obj obj)
   then Array.unsafe_set t i (Sys.opaque_identity obj)
+end
+[@@inline always]
 ;;
 
-let [@inline always] unsafe_set_omit_phys_equal_check t i obj =
+let unsafe_set_omit_phys_equal_check = begin fun t i obj ->
   let old_obj = unsafe_get t i in
   if Caml.Obj.is_int old_obj && Caml.Obj.is_int obj
   then unsafe_set_int_assuming_currently_int t i (Caml.Obj.obj obj : int)
   else Array.unsafe_set t i (Sys.opaque_identity obj)
+end
+[@@inline always]
 ;;
 
 let singleton obj =

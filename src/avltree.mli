@@ -38,20 +38,24 @@
 
 open! Import
 
-(** We expose [t] to allow an optimization in Hashtbl that makes iter and fold more than
-    twice as fast.  We keep the type private to reduce opportunities for external code to
-    violate avltree invariants. *)
-type ('k, 'v) t = private
-  | Empty
-  | Node of { mutable left   : ('k, 'v) t
+type node = { mutable left   : ('k, 'v) t
             ;         key    : 'k
             ; mutable value  : 'v
             ; mutable height : int
             ; mutable right  : ('k, 'v) t
             }
-  | Leaf of {         key    : 'k
+
+type leaf = {         key    : 'k
             ; mutable value  : 'v
             }
+
+(** We expose [t] to allow an optimization in Hashtbl that makes iter and fold more than
+    twice as fast.  We keep the type private to reduce opportunities for external code to
+    violate avltree invariants. *)
+type ('k, 'v) t = private
+  | Empty
+  | Node of node
+  | Leaf of leaf
 
 val empty : ('k, 'v) t
 
