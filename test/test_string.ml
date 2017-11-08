@@ -6,18 +6,6 @@ let%expect_test "hash coherence" [@tags "64-bits-only"] =
   [%expect {| |}];
 ;;
 
-let%test_module "Blit" =
-  (module Test_blit.Test
-       (struct
-         include Char
-         let of_bool b = if b then 'a' else 'b'
-       end)
-       (struct
-         include String
-         let create ~len = create len
-       end)
-       (String))
-
 let%test_module "Caseless Suffix/Prefix" =
   (module struct
     let%test _ = Caseless.is_suffix "OCaml" ~suffix:"AmL"
@@ -320,6 +308,14 @@ let%test_module "Hash" =
 
 let%test _ = of_char_list ['a';'b';'c'] = "abc"
 let%test _ = of_char_list [] = ""
+
+let%expect_test "mem does not allocate" =
+  let string = Sys.opaque_identity "abracadabra" in
+  let char   = Sys.opaque_identity 'd'           in
+  require_no_allocation [%here] (fun () ->
+    ignore (String.mem string char : bool));
+  [%expect {||}];
+;;
 
 let%test_module "Escaping" =
   (module struct
