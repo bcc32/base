@@ -36,7 +36,7 @@ type elt = char
 let is_suffix_gen =
   let rec loop s ~suffix ~char_equal idx_suff idx =
     idx_suff < 0
-    || ((char_equal suffix.[idx_suff] s.[idx])
+    || ((char_equal (get suffix idx_suff) (get s idx))
         && loop s ~suffix ~char_equal (idx_suff - 1) (idx - 1))
   in
   fun s ~suffix ~char_equal ->
@@ -48,7 +48,7 @@ let is_suffix_gen =
 let is_prefix_gen =
   let rec loop s ~prefix ~char_equal i =
     i < 0
-    || ((char_equal prefix.[i] s.[i])
+    || ((char_equal (get prefix i) (get s i))
         && loop s ~prefix ~char_equal (i - 1))
   in
   fun s ~prefix ~char_equal ->
@@ -125,7 +125,7 @@ let contains ?pos ?len t char =
     Ordered_collection_common.get_pos_len_exn ?pos ?len ~length:(length t)
   in
   let last = pos + len in
-  let rec loop i = i < last && (Char.equal t.[i] char || loop (i + 1)) in
+  let rec loop i = i < last && (Char.equal (get t i) char || loop (i + 1)) in
   loop pos
 ;;
 
@@ -356,7 +356,7 @@ let slice t start stop =
 
 
 let nget x i =
-  x.[normalize x i]
+  get x (normalize x i)
 
 let nset x i v =
   Bytes.set x (normalize (Bytes.unsafe_to_string x) i) v
@@ -366,7 +366,7 @@ let to_list s =
     if i < 0 then
       acc
     else
-      loop (s.[i] :: acc) (i-1)
+      loop (get s i :: acc) (i-1)
   in
   loop [] (length s - 1)
 
@@ -376,7 +376,7 @@ let to_list_rev s =
     if i = len then
       acc
     else
-      loop (s.[i] :: acc) (i+1)
+      loop (get s i :: acc) (i+1)
   in
   loop [] 0
 
@@ -425,7 +425,7 @@ let split_gen str ~on =
     if pos = -1 then
       sub str ~pos:0 ~len:last_pos :: acc
     else
-    if is_delim str.[pos] then
+    if is_delim (get str pos) then
       let pos1 = pos + 1 in
       let sub_str = sub str ~pos:pos1 ~len:(last_pos - pos1) in
       loop (sub_str :: acc) pos (pos - 1)
@@ -442,7 +442,7 @@ let split_on_chars str ~on:chars =
 
 let split_lines =
   let back_up_at_newline ~t ~pos ~eol =
-    pos := !pos - (if !pos > 0 && Char.equal t.[!pos - 1] '\r' then 2 else 1);
+    pos := !pos - (if !pos > 0 && Char.equal (get t (!pos - 1)) '\r' then 2 else 1);
     eol := !pos + 1;
   in
   fun t ->
@@ -456,9 +456,9 @@ let split_lines =
       let ac = ref [] in
       (* We treat the end of the string specially, because if the string ends with a
          newline, we don't want an extra empty string at the end of the output. *)
-      if Char.equal t.[!pos] '\n' then back_up_at_newline ~t ~pos ~eol;
+      if Char.equal (get t !pos) '\n' then back_up_at_newline ~t ~pos ~eol;
       while !pos >= 0 do
-        if Char.( <> ) t.[!pos] '\n'
+        if Char.( <> ) (get t !pos) '\n'
         then decr pos
         else
           (* Becuase [pos < eol], we know that [start <= eol]. *)
@@ -491,7 +491,7 @@ let lfindi ?(pos=0) t ~f =
   let n = length t in
   let rec loop i =
     if i = n then None
-    else if f i t.[i] then Some i
+    else if f i (get t i) then Some i
     else loop (i + 1)
   in
   loop pos
@@ -499,14 +499,14 @@ let lfindi ?(pos=0) t ~f =
 
 let find t ~f =
   match lfindi t ~f:(fun _ c -> f c) with
-  | None -> None | Some i -> Some t.[i]
+  | None -> None | Some i -> Some (get t i)
 
 let find_map t ~f =
   let n = length t in
   let rec loop i =
     if i = n then None
     else
-      match f t.[i] with
+      match f (get t i) with
       | None -> loop (i + 1)
       | Some _ as res -> res
   in
@@ -517,7 +517,7 @@ let rfindi ?pos t ~f =
   let rec loop i =
     if i < 0 then None
     else begin
-      if f i t.[i] then Some i
+      if f i (get t i) then Some i
       else loop (i - 1)
     end
   in
@@ -554,7 +554,7 @@ let lstrip ?(drop=Char.is_whitespace) t =
    final result.  This also saves some amount of time. *)
 let strip ?(drop=Char.is_whitespace) t =
   let length = length t in
-  if length = 0 || not (drop t.[0] || drop t.[length - 1])
+  if length = 0 || not (drop (get t 0) || drop (get t (length - 1)))
   then t
   else
     match first_non_drop t ~drop with
@@ -569,7 +569,7 @@ let mapi t ~f =
   let l = length t in
   let t' = Bytes.create l in
   for i = 0 to l - 1 do
-    Bytes.unsafe_set t' i (f i t.[i])
+    Bytes.unsafe_set t' i (f i (get t i))
   done;
   Bytes.unsafe_to_string t'
 
@@ -578,11 +578,11 @@ let map t ~f =
   let l = length t in
   let t' = Bytes.create l in
   for i = 0 to l - 1 do
-    Bytes.unsafe_set t' i (f t.[i])
+    Bytes.unsafe_set t' i (f (get t i))
   done;
   Bytes.unsafe_to_string t'
 
-let to_array s = Array.init (length s) ~f:(fun i -> s.[i])
+let to_array s = Array.init (length s) ~f:(fun i -> (get s i))
 
 let tr ~target ~replacement s =
   map ~f:(fun c -> if Char.equal c target then replacement else c) s
@@ -594,24 +594,24 @@ let tr_inplace ~target ~replacement s = (* destructive version of tr *)
   done
 
 let exists =
-  let rec loop s i ~len ~f = i < len && (f s.[i] || loop s (i + 1) ~len ~f) in
+  let rec loop s i ~len ~f = i < len && (f (get s i) || loop s (i + 1) ~len ~f) in
   fun s ~f -> loop s 0 ~len:(length s) ~f
 ;;
 
 let for_all =
-  let rec loop s i ~len ~f = i = len || (f s.[i] && loop s (i + 1) ~len ~f) in
+  let rec loop s i ~len ~f = i = len || (f (get s i) && loop s (i + 1) ~len ~f) in
   fun s ~f -> loop s 0 ~len:(length s) ~f
 ;;
 
 let fold t ~init ~f =
   let n = length t in
-  let rec loop i ac = if i = n then ac else loop (i + 1) (f ac t.[i]) in
+  let rec loop i ac = if i = n then ac else loop (i + 1) (f ac (get t i)) in
   loop 0 init
 ;;
 
 let foldi t ~init ~f =
   let n = length t in
-  let rec loop i ac = if i = n then ac else loop (i + 1) (f i ac t.[i]) in
+  let rec loop i ac = if i = n then ac else loop (i + 1) (f i ac (get t i)) in
   loop 0 init
 ;;
 
@@ -688,7 +688,7 @@ let concat_map ?sep s ~f = concat_array ?sep (Array.map (to_array s) ~f)
 let filter t ~f =
   let n = length t in
   let i = ref 0 in
-  while !i < n && f t.[!i]; do
+  while !i < n && f (get t !i); do
     incr i
   done;
   if !i = n then
@@ -699,7 +699,7 @@ let filter t ~f =
     let out_pos = ref !i in
     incr i;
     while !i < n; do
-      let c = t.[!i] in
+      let c = (get t !i) in
       if f c then (Bytes.set out !out_pos c; incr out_pos);
       incr i
     done;
@@ -900,7 +900,7 @@ module Escaping = struct
   let update_escape_status str ~escape_char i = function
     | `Escaping -> `Escaped
     | `Literal
-    | `Escaped -> if Char.equal str.[i] escape_char then `Escaping else `Literal
+    | `Escaped -> if Char.equal (get str i) escape_char then `Escaping else `Literal
   ;;
 
   let unescape_gen ~escapeworthy_map ~escape_char =
@@ -954,8 +954,8 @@ module Escaping = struct
               blit ~src ~src_pos:(idx + 2) ~dst ~dst_pos ~len;
               (* backoff [dst_pos] by 1 to copy 'c' *)
               let dst_pos = dst_pos - 1 in
-              Bytes.set dst dst_pos ( match escapeworthy.(Char.to_int src.[idx + 1]) with
-                | -1 -> src.[idx + 1]
+              Bytes.set dst dst_pos ( match escapeworthy.(Char.to_int (get src (idx + 1))) with
+                | -1 -> get src (idx + 1)
                 | n -> Char.unsafe_of_int n);
               (* update [last_dst_pos] and [last_idx] *)
               loop idx dst_pos to_unescape
@@ -981,7 +981,7 @@ module Escaping = struct
 
   let preceding_escape_chars str ~escape_char pos =
     let rec loop p cnt =
-      if (p < 0) || (Char.( <> ) str.[p] escape_char) then
+      if (p < 0) || (Char.( <> ) (get str p) escape_char) then
         cnt
       else
         loop (p - 1) (cnt + 1)
@@ -1003,12 +1003,12 @@ module Escaping = struct
   let update_escape_status str ~escape_char i = function
     | `Escaping -> `Escaped
     | `Literal
-    | `Escaped -> if Char.equal str.[i] escape_char then `Escaping else `Literal
+    | `Escaped -> if Char.equal (get str i) escape_char then `Escaping else `Literal
   ;;
 
   let escape_status str ~escape_char pos =
     let odd = (preceding_escape_chars str ~escape_char pos) mod 2 = 1 in
-    match odd, Char.equal str.[pos] escape_char with
+    match odd, Char.equal (get str pos) escape_char with
     | true, (true|false) -> `Escaped
     | false, true -> `Escaping
     | false, false -> `Literal
@@ -1045,7 +1045,7 @@ module Escaping = struct
     let rec loop i status =
       if i >= pos
       && (match status with `Literal -> true | `Escaped | `Escaping -> false)
-      && Char.equal str.[i] char
+      && Char.equal (get str i) char
       then Some i
       else (
         let i = i + 1 in
@@ -1081,7 +1081,7 @@ module Escaping = struct
         if pos < 0 then None
         else (
           let escape_chars = preceding_escape_chars str ~escape_char pos in
-          if escape_chars mod 2 = 0 && Char.equal str.[pos] char
+          if escape_chars mod 2 = 0 && Char.equal (get str pos) char
           then Some pos else loop (pos - escape_chars - 1))
       in
       loop pos
@@ -1124,7 +1124,7 @@ module Escaping = struct
       else
         let status = update_escape_status str ~escape_char pos status in
         if (match status with `Literal -> true | `Escaped | `Escaping -> false)
-        && is_delim str.[pos]
+        && is_delim (get str pos)
         then (
           let sub_str = sub str ~pos:last_pos ~len:(pos - last_pos) in
           loop (sub_str :: acc) status (pos + 1) (pos + 1))
@@ -1194,7 +1194,7 @@ module Escaping = struct
   let strip_literal ?(drop=Char.is_whitespace) t ~escape_char =
     let length = length t in
     (* performance hack: avoid copying [t] in common cases *)
-    if length = 0 || not (drop t.[0] || drop t.[length - 1])
+    if length = 0 || not (drop (get t 0) || drop (get t (length - 1)))
     then t
     else
       match first_non_drop_literal t ~drop ~escape_char with
