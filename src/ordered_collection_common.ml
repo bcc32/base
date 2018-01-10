@@ -13,13 +13,14 @@ let slice ~length_fun ~sub_fun t start stop =
   let len = (normalize ~length_fun t stop) - pos in
   sub_fun t ~pos ~len
 
-let [@inline never] slow_check_pos_len_exn ~pos ~len ~length =
+let slow_check_pos_len_exn ~pos ~len ~length =
   if pos < 0
   then invalid_argf "Negative position: %d" pos ();
   if len < 0
   then invalid_argf "Negative length: %d" len ();
   if pos > length - len
   then invalid_argf "pos + len past end: %d + %d > %d" pos len length ()
+[@@inline never]
 ;;
 
 let check_pos_len_exn ~pos ~len ~length =

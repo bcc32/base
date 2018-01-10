@@ -63,11 +63,12 @@ let errors t =
     (Error.to_string_hum (Error.tag error ~tag:(path_string path))))
 ;;
 
-let [@inline never] result_fail t =
+let result_fail t =
   Or_error.error
     "validation errors"
     (List.map t ~f:(fun { path; error } -> (path_string path, error)))
     (sexp_of_list (sexp_of_pair sexp_of_string Error.sexp_of_t))
+[@@inline never]
 ;;
 
 (** [result] is carefully implemented so that it can be inlined -- calling [result_fail],

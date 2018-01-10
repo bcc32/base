@@ -39,15 +39,19 @@ open! Import
     violate avltree invariants. *)
 type ('k, 'v) t = private
   | Empty
-  | Node of { mutable left   : ('k, 'v) t
-            ;         key    : 'k
-            ; mutable value  : 'v
-            ; mutable height : int
-            ; mutable right  : ('k, 'v) t
-            }
-  | Leaf of {         key    : 'k
-            ; mutable value  : 'v
-            }
+  | Node of node
+  | Leaf of leaf
+and node =
+  { mutable left   : ('k, 'v) t
+  ;         key    : 'k
+  ; mutable value  : 'v
+  ; mutable height : int
+  ; mutable right  : ('k, 'v) t
+  }
+  and leaf =
+  {         key    : 'k
+  ; mutable value  : 'v
+  }
 
 val empty : ('k, 'v) t
 

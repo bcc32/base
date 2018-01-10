@@ -2,6 +2,8 @@
   "name": "bs-base",
   "version": "0.1.0",
   "sources": [
+    "_build/default/compiler-stdlib/src",
+    "_build/default/shadow-stdlib/src",
     "src"
   ],
   "bs-dependencies" : [

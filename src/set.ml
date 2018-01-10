@@ -1230,7 +1230,7 @@ end
 type ('elt, 'cmp) comparator =
   (module Comparator.S with type t = 'elt and type comparator_witness = 'cmp)
 
-let to_comparator (type elt cmp) ((module M) : (elt, cmp) comparator) = M.comparator
+let to_comparator (type elt) (type cmp) ((module M) : (elt, cmp) comparator) = M.comparator
 
 let empty m = Using_comparator.empty ~comparator:(to_comparator m)
 let singleton m a = Using_comparator.singleton ~comparator:(to_comparator m) a
@@ -1267,7 +1267,7 @@ module type Hash_fold_m = Hasher.S
 let sexp_of_m__t (type elt) (module Elt : Sexp_of_m with type t = elt) t =
   sexp_of_t Elt.sexp_of_t (fun _ -> Sexp.Atom "_") t
 
-let m__t_of_sexp (type elt cmp)
+let m__t_of_sexp (type elt) (type cmp)
       (module Elt : M_of_sexp with type t = elt and type comparator_witness = cmp)
       sexp =
   Using_comparator.t_of_sexp_direct ~comparator:Elt.comparator Elt.t_of_sexp sexp

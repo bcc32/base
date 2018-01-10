@@ -186,10 +186,10 @@ let zero = 0.
 let one = 1.
 let minus_one = -1.
 
-let pi = 0x3.243F6A8885A308D313198A2E037073
-let sqrt_pi = 0x1.C5BF891B4EF6AA79C3B0520D5DB938
-let sqrt_2pi = 0x2.81B263FEC4E0B2CAF9483F5CE459DC
-let euler = 0x0.93C467E37DB0C7A4D1BE3F810152CB
+let pi = 3.14159265358979312
+let sqrt_pi = 1.7724538509055161
+let sqrt_2pi = 2.50662827463100069
+let euler = 0.577215664901532866
 
 (* The bits of INRIA's [Pervasives] that we just want to expose in
    [Float]. Most are already deprecated in [Pervasives], and

@@ -212,7 +212,7 @@ module T = struct
        - all bits of the input are used in generating the output
 
        In our case we also want it to be fast, non-allocating, and inlinable.  *)
-    let [@inline always] hash_int (t : int) =
+    let hash_int (t : int) =
       let t = (lnot t) + (t lsl 21) in
       let t = t lxor (t lsr 24) in
       let t = (t + (t lsl 3)) + (t lsl 8) in
@@ -220,6 +220,7 @@ module T = struct
       let t = (t + (t lsl 2)) + (t lsl 4) in
       let t = t lxor (t lsr 28) in
       t + (t lsl 31)
+    [@@inline always]
     ;;
 
     let hash_bool x = if x then 1 else 0
