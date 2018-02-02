@@ -13,18 +13,18 @@ end
    (e.g. to hold the compare function), but a lot of memory is saved by Empty being an
    immediate, since all unused buckets in the hashtbl don't use any memory (besides the
    array cell) *)
-type ('k, 'v) t = private
+type ('k, 'v) t =
   | Empty
-  | Node of node
-  | Leaf of leaf
-and node =
+  | Node of ('k, 'v) node
+  | Leaf of ('k, 'v) leaf
+and ('k, 'v) node =
   { mutable left   : ('k, 'v) t
   ;         key    : 'k
   ; mutable value  : 'v
   ; mutable height : int
   ; mutable right  : ('k, 'v) t
   }
-  and leaf =
+  and ('k, 'v) leaf =
   {         key    : 'k
   ; mutable value  : 'v
   }

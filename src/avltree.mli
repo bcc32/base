@@ -39,16 +39,16 @@ open! Import
     violate avltree invariants. *)
 type ('k, 'v) t = private
   | Empty
-  | Node of node
-  | Leaf of leaf
-and node =
+  | Node of ('k, 'v) node
+  | Leaf of ('k, 'v) leaf
+and ('k, 'v) node = private
   { mutable left   : ('k, 'v) t
   ;         key    : 'k
   ; mutable value  : 'v
   ; mutable height : int
   ; mutable right  : ('k, 'v) t
   }
-  and leaf =
+  and ('k, 'v) leaf = private
   {         key    : 'k
   ; mutable value  : 'v
   }
