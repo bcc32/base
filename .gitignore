@@ -2,4 +2,6 @@ _build
 *.install
 *.merlin
 /lib
+/compiler-stdlib/lib
+/shadow-stdlib/lib
 node_modules
