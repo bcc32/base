@@ -1,5 +1,6 @@
 {
   "name": "bs-base",
+  "namespace": true,
   "version": "0.1.0",
   "sources": [
     "_build/default/compiler-stdlib/src",
