@@ -6,5 +6,6 @@
     "src"
   ],
   "bs-dependencies" : [
+    "bs-base-shadow-stdlib"
   ]
 }
