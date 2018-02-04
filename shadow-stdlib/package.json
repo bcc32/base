@@ -1,5 +1,5 @@
 {
-  "name": "bs-base",
+  "name": "bs-base-shadow-stdlib",
   "version": "0.1.0",
   "scripts": {
     "clean": "bsb -clean-world",
