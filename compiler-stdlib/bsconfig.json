@@ -3,7 +3,7 @@
   "namespace": true,
   "version": "0.1.0",
   "sources": [
-    "up/src",
+    "up/src"
   ],
   "bs-dependencies" : [
   ]
