@@ -300,7 +300,7 @@ let is_sorted t ~compare =
   let rec is_sorted_loop t ~compare i =
     if i < 1
     then true
-    else compare t.(i - 1) t.(i) <= 0 && is_sorted_loop t ~compare (i - 1)
+    else compare (get t (i - 1)) (get t i) <= 0 && is_sorted_loop t ~compare (i - 1)
   in
   is_sorted_loop t ~compare (length t - 1)
 ;;
@@ -309,7 +309,7 @@ let is_sorted_strictly t ~compare =
   let rec is_sorted_strictly_loop t ~compare i =
     if i < 1
     then true
-    else compare t.(i - 1) t.(i) < 0 && is_sorted_strictly_loop t ~compare (i - 1)
+    else compare (get t (i - 1)) (get t i) <= 0 && is_sorted_strictly_loop t ~compare (i - 1)
   in
   is_sorted_strictly_loop t ~compare (length t - 1)
 ;;
@@ -342,7 +342,7 @@ let max_elt t ~compare = Container.max_elt ~fold t ~compare
 
 let foldi t ~init ~f =
   let rec foldi_loop t i ac ~f =
-    if i = length t then ac else foldi_loop t (i + 1) (f i ac t.(i)) ~f
+    if i = length t then ac else foldi_loop t (i + 1) (f i ac (get t i)) ~f
   in
   foldi_loop t 0 init ~f
 ;;
@@ -395,7 +395,7 @@ let of_list_rev l =
       match !r with
       | [] -> assert false
       | a :: l ->
-        t.(i) <- a;
+        set t i a;
         r := l
     done;
     t
@@ -463,18 +463,18 @@ let filter_opt t = filter_map t ~f:Fn.id
 
 let iter2_exn t1 t2 ~f =
   if length t1 <> length t2 then invalid_arg "Array.iter2_exn";
-  iteri t1 ~f:(fun i x1 -> f x1 t2.(i))
+  iteri t1 ~f:(fun i x1 -> f x1 (get t2 i))
 ;;
 
 let map2_exn t1 t2 ~f =
   let len = length t1 in
   if length t2 <> len then invalid_arg "Array.map2_exn";
-  init len ~f:(fun i -> f t1.(i) t2.(i))
+  init len ~f:(fun i -> f (get t1 i) (get t2 i))
 ;;
 
 let fold2_exn t1 t2 ~init ~f =
   if length t1 <> length t2 then invalid_arg "Array.fold2_exn";
-  foldi t1 ~init ~f:(fun i ac x -> f ac x t2.(i))
+  foldi t1 ~init ~f:(fun i ac x -> f ac x (get t2 i))
 ;;
 
 let filter t ~f = filter_map t ~f:(fun x -> if f x then Some x else None)
@@ -482,14 +482,14 @@ let filteri t ~f = filter_mapi t ~f:(fun i x -> if f i x then Some x else None)
 
 let exists t ~f =
   let rec exists_loop t ~f i =
-    if i < 0 then false else f t.(i) || exists_loop t ~f (i - 1)
+    if i < 0 then false else f (get t i) || exists_loop t ~f (i - 1)
   in
   exists_loop t ~f (length t - 1)
 ;;
 
 let existsi t ~f =
   let rec existsi_loop t ~f i =
-    if i < 0 then false else f i t.(i) || existsi_loop t ~f (i - 1)
+    if i < 0 then false else f i (get t i) || existsi_loop t ~f (i - 1)
   in
   existsi_loop t ~f (length t - 1)
 ;;
@@ -498,21 +498,21 @@ let mem t a ~equal = exists t ~f:(equal a)
 
 let for_all t ~f =
   let rec for_all_loop t ~f i =
-    if i < 0 then true else f t.(i) && for_all_loop t ~f (i - 1)
+    if i < 0 then true else f (get t i) && for_all_loop t ~f (i - 1)
   in
   for_all_loop t ~f (length t - 1)
 ;;
 
 let for_alli t ~f =
   let rec for_alli_loop t ~f i =
-    if i < 0 then true else f i t.(i) && for_alli_loop t ~f (i - 1)
+    if i < 0 then true else f i (get t i) && for_alli_loop t ~f (i - 1)
   in
   for_alli_loop t ~f (length t - 1)
 ;;
 
 let exists2_exn t1 t2 ~f =
   let rec exists2_exn_loop t1 t2 ~f i =
-    if i < 0 then false else f t1.(i) t2.(i) || exists2_exn_loop t1 t2 ~f (i - 1)
+    if i < 0 then false else f (get t1 i) (get t2 i) || exists2_exn_loop t1 t2 ~f (i - 1)
   in
   let len = length t1 in
   if length t2 <> len then invalid_arg "Array.exists2_exn";
@@ -521,7 +521,7 @@ let exists2_exn t1 t2 ~f =
 
 let for_all2_exn t1 t2 ~f =
   let rec for_all2_loop t1 t2 ~f i =
-    if i < 0 then true else f t1.(i) t2.(i) && for_all2_loop t1 t2 ~f (i - 1)
+    if i < 0 then true else f (get t1 i) (get t2 i) && for_all2_loop t1 t2 ~f (i - 1)
   in
   let len = length t1 in
   if length t2 <> len then invalid_arg "Array.for_all2_exn";
@@ -533,7 +533,7 @@ let equal equal t1 t2 = length t1 = length t2 && for_all2_exn t1 t2 ~f:equal
 
 let map_inplace t ~f =
   for i = 0 to length t - 1 do
-    t.(i) <- f t.(i)
+    set t i (f (get t i))
   done
 ;;
 
@@ -541,8 +541,8 @@ let findi t ~f =
   let rec findi_loop t ~f ~length i =
     if i >= length
     then None
-    else if f i t.(i)
-    then Some (i, t.(i))
+    else if f i (get t i)
+    then Some (i, (get t i))
     else findi_loop t ~f ~length (i + 1)
   in
   let length = length t in
@@ -578,7 +578,7 @@ let find_map t ~f =
     if i >= length
     then None
     else (
-      match f t.(i) with
+      match f (get t i) with
       | None -> find_map_loop t ~f ~length (i + 1)
       | Some _ as res -> res)
   in
@@ -602,7 +602,7 @@ let find_mapi t ~f =
     if i >= length
     then None
     else (
-      match f i t.(i) with
+      match f i (get t i) with
       | None -> find_mapi_loop t ~f ~length (i + 1)
       | Some _ as res -> res)
   in
@@ -628,9 +628,9 @@ let find_consecutive_duplicate t ~equal =
   else (
     let result = ref None in
     let i = ref 1 in
-    let prev = ref t.(0) in
+    let prev = ref (get t 0) in
     while !i < n do
-      let cur = t.(!i) in
+      let cur = (get t !i) in
       if equal cur !prev
       then (
         result := Some (!prev, cur);
@@ -646,9 +646,9 @@ let reduce t ~f =
   if length t = 0
   then None
   else (
-    let r = ref t.(0) in
+    let r = ref (get t 0) in
     for i = 1 to length t - 1 do
-      r := f !r t.(i)
+      r := f !r (get t i)
     done;
     Some !r)
 ;;
@@ -664,7 +664,7 @@ let permute = Array_permute.permute
 let random_element_exn ?(random_state = Random.State.default) t =
   if is_empty t
   then failwith "Array.random_element_exn: empty array"
-  else t.(Random.State.int random_state (length t))
+  else (get t (Random.State.int random_state (length t)))
 ;;
 
 let random_element ?(random_state = Random.State.default) t =
@@ -687,13 +687,13 @@ let unzip t =
   if n = 0
   then [||], [||]
   else (
-    let x, y = t.(0) in
+    let x, y = (get t 0) in
     let res1 = create ~len:n x in
     let res2 = create ~len:n y in
     for i = 1 to n - 1 do
-      let x, y = t.(i) in
-      res1.(i) <- x;
-      res2.(i) <- y
+      let x, y = (get t i) in
+      set res1 i x;
+      set res2 i y
     done;
     res1, res2)
 ;;
@@ -720,13 +720,13 @@ let partitioni_tf t ~f =
 ;;
 
 let partition_tf t ~f = partitioni_tf t ~f:(fun _i x -> f x)
-let last t = t.(length t - 1)
+let last t = get t (length t - 1)
 
 (* Convert to a sequence but does not attempt to protect against modification
    in the array. *)
 let to_sequence_mutable t =
   Sequence.unfold_step ~init:0 ~f:(fun i ->
-    if i >= length t then Sequence.Step.Done else Sequence.Step.Yield (t.(i), i + 1))
+    if i >= length t then Sequence.Step.Done else Sequence.Step.Yield (get t i, i + 1))
 ;;
 
 let to_sequence t = to_sequence_mutable (copy t)
@@ -737,11 +737,11 @@ let cartesian_product t1 t2 =
   else (
     let n1 = length t1 in
     let n2 = length t2 in
-    let t = create ~len:(n1 * n2) (t1.(0), t2.(0)) in
+    let t = create ~len:(n1 * n2) (get t1 0, get t2 0) in
     let r = ref 0 in
     for i1 = 0 to n1 - 1 do
       for i2 = 0 to n2 - 1 do
-        t.(!r) <- (t1.(i1), t2.(i2));
+        set t !r (get t1 i1, get t2 i2);
         incr r
       done
     done;
@@ -753,10 +753,10 @@ let transpose tt =
   then Some [||]
   else (
     let width = length tt in
-    let depth = length tt.(0) in
+    let depth = length (get tt 0) in
     if exists tt ~f:(fun t -> length t <> depth)
     then None
-    else Some (init depth ~f:(fun d -> init width ~f:(fun w -> tt.(w).(d)))))
+    else Some (init depth ~f:(fun d -> init width ~f:(fun w -> (get (get tt w) d)))))
 ;;
 
 let transpose_exn tt =
@@ -782,7 +782,7 @@ include Blit.Make1 (struct
       then [||]
       else (
         assert (length t > 0);
-        create ~len t.(0))
+        create ~len (get t 0))
     ;;
 
     let unsafe_blit = blit

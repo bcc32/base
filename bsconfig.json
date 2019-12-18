@@ -3,9 +3,12 @@
   "namespace": true,
   "version": "0.1.0",
   "sources": [
-    "src"
+    "up/src"
   ],
   "bs-dependencies" : [
-    "bs-base-shadow-stdlib"
+    "bs-base-compiler-stdlib",
+    "bs-base-shadow-stdlib",
+    "bs-base-hash-types",
+    "bs-sexplib0"
   ]
 }

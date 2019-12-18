@@ -4,5 +4,6 @@ _build
 _opam
 /lib
 /compiler-stdlib/lib
+/hash_types/lib
 /shadow-stdlib/lib
 node_modules

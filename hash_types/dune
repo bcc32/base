@@ -1,1 +1,1 @@
-(dirs :standard \ test)
+(dirs :standard \ test node_modules up)
