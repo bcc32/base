@@ -1,0 +1,10 @@
+{
+  "name": "bs-base-compiler-stdlib",
+  "namespace": true,
+  "version": "0.1.0",
+  "sources": [
+    "up/src",
+  ],
+  "bs-dependencies" : [
+  ]
+}
