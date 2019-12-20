@@ -1,14 +1,18 @@
+var Caml_external_polyfill = require('bs-platform/lib/js/caml_external_polyfill.js');
+
 //Provides: Base_int_math_int_popcount const
 function Base_int_math_int_popcount(v) {
   v = v - ((v >>> 1) & 0x55555555);
   v = (v & 0x33333333) + ((v >>> 2) & 0x33333333);
   return ((v + (v >>> 4) & 0xF0F0F0F) * 0x1010101) >>> 24;
 }
+Caml_external_polyfill.register('Base_int_math_int_popcount', Base_int_math_int_popcount);
 
 //Provides: Base_clear_caml_backtrace_pos const
 function Base_clear_caml_backtrace_pos(x) {
   return 0;
 }
+Caml_external_polyfill.register('Base_clear_caml_backtrace_pos', Base_clear_caml_backtrace_pos);
 
 //Provides: Base_int_math_int32_clz const
 function Base_int_math_int32_clz(x) {
@@ -21,14 +25,17 @@ function Base_int_math_int32_clz(x) {
   y = x >> 1; if (y != 0) return n - 2;
   return n - x;
 }
+Caml_external_polyfill.register('Base_int_math_int32_clz', Base_int_math_int32_clz);
 
 //Provides: Base_int_math_int_clz const
 //Requires: Base_int_math_int32_clz
 function Base_int_math_int_clz(x) { return Base_int_math_int32_clz(x); }
+Caml_external_polyfill.register('Base_int_math_int_clz', Base_int_math_int_clz);
 
 //Provides: Base_int_math_nativeint_clz const
 //Requires: Base_int_math_int32_clz
 function Base_int_math_nativeint_clz(x) { return Base_int_math_int32_clz(x); }
+Caml_external_polyfill.register('Base_int_math_nativeint_clz', Base_int_math_nativeint_clz);
 
 //Provides: Base_int_math_int64_clz const
 //Requires: caml_int64_shift_right_unsigned, caml_int64_is_zero, caml_int64_to_int32
@@ -49,6 +56,7 @@ function Base_int_math_int64_clz(x) {
   if (!caml_int64_is_zero(y)) return n - 2;
   return n - caml_int64_to_int32(x);
 }
+Caml_external_polyfill.register('Base_int_math_int64_clz', Base_int_math_int64_clz);
 
 //Provides: Base_int_math_int32_ctz const
 function Base_int_math_int32_ctz(x) {
@@ -110,6 +118,7 @@ function Base_int_math_int_pow_stub(base, exponent) {
   }
   return res;
 }
+Caml_external_polyfill.register('Base_int_math_int_pow_stub', Base_int_math_int_pow_stub);
 
 //Provides: Base_int_math_int64_pow_stub const
 //Requires: caml_int64_mul, caml_int64_is_zero, caml_int64_shift_right_unsigned
@@ -127,20 +136,24 @@ function Base_int_math_int64_pow_stub(base, exponent) {
   }
   return res;
 }
+Caml_external_polyfill.register('Base_int_math_int64_pow_stub', Base_int_math_int64_pow_stub);
 
 //Provides: Base_hash_string mutable
 //Requires: caml_hash
 function Base_hash_string(s) {
   return caml_hash(1,1,0,s)
 }
+Caml_external_polyfill.register('Base_hash_string', Base_hash_string);
 //Provides: Base_hash_double const
 //Requires: caml_hash
 function Base_hash_double(d) {
   return caml_hash(1,1,0,d);
 }
+Caml_external_polyfill.register('Base_hash_double', Base_hash_double);
 
 //Provides: Base_am_testing const
 //Weakdef
 function Base_am_testing(x) {
   return 0;
 }
+Caml_external_polyfill.register('Base_am_testing', Base_am_testing);
