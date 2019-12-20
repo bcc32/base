@@ -445,8 +445,7 @@ val ldexp : t -> int -> t
 val frexp : t -> t * int
 
 (** Base 10 logarithm. *)
-external log10 : t -> t = "caml_log10_float" "log10"
-[@@unboxed] [@@noalloc]
+val log10 : t -> t
 
 (** [expm1 x] computes [exp x -. 1.0], giving numerically-accurate results even if [x] is
     close to [0.0]. *)
@@ -455,8 +454,7 @@ external expm1 : t -> t = "caml_expm1_float" "caml_expm1"
 
 (** [log1p x] computes [log(1.0 +. x)] (natural logarithm), giving numerically-accurate
     results even if [x] is close to [0.0]. *)
-external log1p : t -> t = "caml_log1p_float" "caml_log1p"
-[@@unboxed] [@@noalloc]
+val log1p : t -> t
 
 (** [copysign x y] returns a float whose absolute value is that of [x] and whose sign is
     that of [y].  If [x] is [nan], returns [nan].  If [y] is [nan], returns either [x] or
@@ -465,65 +463,52 @@ external copysign : t -> t -> t = "caml_copysign_float" "caml_copysign"
 [@@unboxed] [@@noalloc]
 
 (** Cosine.  Argument is in radians. *)
-external cos : t -> t = "caml_cos_float" "cos"
-[@@unboxed] [@@noalloc]
+val cos : t -> t
 
 (** Sine.  Argument is in radians. *)
-external sin : t -> t = "caml_sin_float" "sin"
-[@@unboxed] [@@noalloc]
+val sin : t -> t
 
 (** Tangent.  Argument is in radians. *)
-external tan : t -> t = "caml_tan_float" "tan"
-[@@unboxed] [@@noalloc]
+val tan : t -> t
 
 (** Arc cosine.  The argument must fall within the range [[-1.0, 1.0]].  Result is in
     radians and is between [0.0] and [pi]. *)
-external acos : t -> t = "caml_acos_float" "acos"
-[@@unboxed] [@@noalloc]
+val acos : t -> t
 
 (** Arc sine.  The argument must fall within the range [[-1.0, 1.0]].  Result is in
     radians and is between [-pi/2] and [pi/2]. *)
-external asin : t -> t = "caml_asin_float" "asin"
-[@@unboxed] [@@noalloc]
+val asin : t -> t
 
 (** Arc tangent.  Result is in radians and is between [-pi/2] and [pi/2]. *)
-external atan : t -> t = "caml_atan_float" "atan"
-[@@unboxed] [@@noalloc]
+val atan : t -> t
 
 (** [atan2 y x] returns the arc tangent of [y /. x].  The signs of [x] and [y] are used to
     determine the quadrant of the result.  Result is in radians and is between [-pi] and
     [pi]. *)
-external atan2 : t -> t -> t = "caml_atan2_float" "atan2"
-[@@unboxed] [@@noalloc]
+val atan2 : t -> t -> t
 
 (** [hypot x y] returns [sqrt(x *. x + y *. y)], that is, the length of the hypotenuse of
     a right-angled triangle with sides of length [x] and [y], or, equivalently, the
     distance of the point [(x,y)] to origin. *)
-external hypot : t -> t -> t = "caml_hypot_float" "caml_hypot"
-[@@unboxed] [@@noalloc]
+val hypot : t -> t -> t
 
 (** Hyperbolic cosine.  Argument is in radians. *)
-external cosh : t -> t = "caml_cosh_float" "cosh"
-[@@unboxed] [@@noalloc]
+val cosh : t -> t
 
 (** Hyperbolic sine.  Argument is in radians. *)
-external sinh : t -> t = "caml_sinh_float" "sinh"
-[@@unboxed] [@@noalloc]
+val sinh : t -> t
 
 (** Hyperbolic tangent.  Argument is in radians. *)
-external tanh : t -> t = "caml_tanh_float" "tanh"
-[@@unboxed] [@@noalloc]
+val tanh : t -> t
 
 (** Square root. *)
-external sqrt : t -> t = "caml_sqrt_float" "sqrt"
-[@@unboxed] [@@noalloc]
+val sqrt : t -> t
 
 (** Exponential. *)
-external exp : t -> t = "caml_exp_float" "exp" [@@unboxed] [@@noalloc]
+val exp : t -> t
 
 (** Natural logarithm. *)
-external log : t -> t = "caml_log_float" "log"
-[@@unboxed] [@@noalloc]
+val log : t -> t
 
 (** Excluding nan the floating-point "number line" looks like:
     {v

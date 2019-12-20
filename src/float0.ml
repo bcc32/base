@@ -33,37 +33,34 @@ include (
       = "caml_ldexp_float" "caml_ldexp_float_unboxed"
     [@@noalloc]
 
-    external log10 : float -> float = "caml_log10_float" "log10"
-    [@@unboxed] [@@noalloc]
+    val log10 : float -> float
 
     external expm1 : float -> float = "caml_expm1_float" "caml_expm1"
     [@@unboxed] [@@noalloc]
 
-    external log1p : float -> float = "caml_log1p_float" "caml_log1p"
-    [@@unboxed] [@@noalloc]
+    val log1p : float -> float
 
     external copysign : float -> float -> float = "caml_copysign_float" "caml_copysign"
     [@@unboxed] [@@noalloc]
 
-    external cos : float -> float = "caml_cos_float" "cos" [@@unboxed] [@@noalloc]
-    external sin : float -> float = "caml_sin_float" "sin" [@@unboxed] [@@noalloc]
-    external tan : float -> float = "caml_tan_float" "tan" [@@unboxed] [@@noalloc]
-    external acos : float -> float = "caml_acos_float" "acos" [@@unboxed] [@@noalloc]
-    external asin : float -> float = "caml_asin_float" "asin" [@@unboxed] [@@noalloc]
-    external atan : float -> float = "caml_atan_float" "atan" [@@unboxed] [@@noalloc]
+    val cos : float -> float
+    val sin : float -> float
+    val tan : float -> float
+    val acos : float -> float
+    val asin : float -> float
+    val atan : float -> float
 
-    external atan2 : float -> float -> float = "caml_atan2_float" "atan2"
-    [@@unboxed] [@@noalloc]
 
-    external hypot : float -> float -> float = "caml_hypot_float" "caml_hypot"
-    [@@unboxed] [@@noalloc]
+    val atan2 : float -> float -> float
 
-    external cosh : float -> float = "caml_cosh_float" "cosh" [@@unboxed] [@@noalloc]
-    external sinh : float -> float = "caml_sinh_float" "sinh" [@@unboxed] [@@noalloc]
-    external tanh : float -> float = "caml_tanh_float" "tanh" [@@unboxed] [@@noalloc]
-    external sqrt : float -> float = "caml_sqrt_float" "sqrt" [@@unboxed] [@@noalloc]
-    external exp : float -> float = "caml_exp_float" "exp" [@@unboxed] [@@noalloc]
-    external log : float -> float = "caml_log_float" "log" [@@unboxed] [@@noalloc]
+    val hypot : float -> float -> float
+
+    val cosh : float -> float
+    val sinh : float -> float
+    val tanh : float -> float
+    val sqrt : float -> float
+    val exp : float -> float
+    val log : float -> float
   end)
 
 (* We need this indirection because these are exposed as "val" instead of "external" *)
