@@ -1,6 +1,6 @@
 {
   "name": "bs-base-compiler-stdlib",
-  "namespace": "caml",
+  "namespace": false,
   "version": "0.1.0",
   "sources": [
     "up/src"

@@ -1,6 +1,6 @@
 {
   "name": "bs-base-shadow-stdlib",
-  "namespace": "shadow_stdlib",
+  "namespace": false,
   "version": "0.1.0",
   "sources": [
     "up/src"
