@@ -1,0 +1,8 @@
+flatten dependency.  can probably just add the src dirs of
+compiler-stdlib, shadow-stdlib, hash-types?
+
+Caml_external_polyfill.register works in JS, but what about ES6?
+
+Try to implement primitvies using a ml file instead of JS?
+
+Implement ephemerons using strict pointers.
